@@ -48,6 +48,7 @@ function ProfilePage() {
     removePlan,
     isAdmin,
     isBarista,
+    roles,
   } = useBarista();
   const queryClient = useQueryClient();
   const navigate = useNavigate({ from: "/profile" });
