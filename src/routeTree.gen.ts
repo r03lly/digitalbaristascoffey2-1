@@ -22,6 +22,7 @@ import { Route as BaristaRouteImport } from './routes/barista'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as CreationsRouteImport } from './routes/creations'
+import { Route as DevelopRouteImport } from './routes/develop'
 import { Route as FlowRouteImport } from './routes/flow'
 import { Route as FutureRouteImport } from './routes/future'
 import { Route as HomeRouteImport } from './routes/home'
@@ -104,6 +105,11 @@ const CommunityRoute = CommunityRouteImport.update({
 const CreationsRoute = CreationsRouteImport.update({
   id: '/creations',
   path: '/creations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DevelopRoute = DevelopRouteImport.update({
+  id: '/develop',
+  path: '/develop',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FlowRoute = FlowRouteImport.update({
@@ -212,6 +218,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/community': typeof CommunityRoute
   '/creations': typeof CreationsRoute
+  '/develop': typeof DevelopRoute
   '/flow': typeof FlowRoute
   '/future': typeof FutureRoute
   '/home': typeof HomeRoute
@@ -245,6 +252,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/community': typeof CommunityRoute
   '/creations': typeof CreationsRoute
+  '/develop': typeof DevelopRoute
   '/flow': typeof FlowRoute
   '/future': typeof FutureRoute
   '/home': typeof HomeRoute
@@ -279,6 +287,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/community': typeof CommunityRoute
   '/creations': typeof CreationsRoute
+  '/develop': typeof DevelopRoute
   '/flow': typeof FlowRoute
   '/future': typeof FutureRoute
   '/home': typeof HomeRoute
@@ -314,6 +323,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/community'
     | '/creations'
+    | '/develop'
     | '/flow'
     | '/future'
     | '/home'
@@ -347,6 +357,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/community'
     | '/creations'
+    | '/develop'
     | '/flow'
     | '/future'
     | '/home'
@@ -380,6 +391,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/community'
     | '/creations'
+    | '/develop'
     | '/flow'
     | '/future'
     | '/home'
@@ -414,6 +426,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   CommunityRoute: typeof CommunityRoute
   CreationsRoute: typeof CreationsRoute
+  DevelopRoute: typeof DevelopRoute
   FlowRoute: typeof FlowRoute
   FutureRoute: typeof FutureRoute
   HomeRoute: typeof HomeRoute
@@ -525,6 +538,13 @@ declare module '@tanstack/react-router' {
       path: '/creations'
       fullPath: '/creations'
       preLoaderRoute: typeof CreationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/develop': {
+      id: '/develop'
+      path: '/develop'
+      fullPath: '/develop'
+      preLoaderRoute: typeof DevelopRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/flow': {
@@ -670,6 +690,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   CommunityRoute: CommunityRoute,
   CreationsRoute: CreationsRoute,
+  DevelopRoute: DevelopRoute,
   FlowRoute: FlowRoute,
   FutureRoute: FutureRoute,
   HomeRoute: HomeRoute,
