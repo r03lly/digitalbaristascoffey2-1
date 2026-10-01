@@ -69,7 +69,7 @@ Sumber tunggal: PDF "Rangkuman UI/UX Digital Barista Scoffey 1–14" (DESIGN FLO
 ## Developer & backup
 - [x] Halaman /develop
 - [ ] Akun developer mantapimo@gmail.com — menunggu kata sandi yang lebih kuat
-- [x] Backup/restore ke Google Drive + otomatis jam 00:00 WIB
+- [x] Backup/restore ke Google Drive + otomatis jam 00:00 WITA (UTC+8)
 
 ## Pesanan Masuk
 - [x] Rekap menu & total di /orders hanya hari ini
