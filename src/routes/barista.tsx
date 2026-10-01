@@ -210,84 +210,71 @@ function BaristaPanel() {
 
   return (
     <PhoneShell title={t("Panel Barista")} back="/profile" nav navItems={baristaNav}>
+      <p className="mt-3 text-sm text-muted-foreground">
+        {t("Antrian dan rekap pesanan hari ini untuk barista Scoffey.")}
+      </p>
+
       {/* Rekap harian */}
-      <div className="mt-1 rounded-2xl border border-border bg-card/60 p-4">
-        <div className="flex items-center gap-2">
-          <CalendarClock className="size-4 text-primary" />
-          <h3 className="label-caps text-primary">{t("Rekap hari ini")}</h3>
+      <section className="mt-5">
+        <SectionLabel>{t("Rekap hari ini")}</SectionLabel>
+        <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+          <RecapStat icon={ClipboardList} label={t("Pesanan masuk")} value={String(today.count)} />
+          <RecapStat icon={Check} label={t("Selesai disajikan")} value={String(today.done)} />
+          <RecapStat icon={Coffee} label={t("Omzet")} value={formatIDR(today.total)} accent />
+          <RecapStat icon={Heart} label={t("Tip diterima")} value={formatIDR(today.tip)} accent />
         </div>
-        <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4">
-          <RecapStat label={t("Pesanan masuk")} value={String(today.count)} />
-          <RecapStat label={t("Selesai disajikan")} value={String(today.done)} />
-          <RecapStat label={t("Omzet")} value={formatIDR(today.total)} accent />
-          <RecapStat label={t("Tip diterima")} value={formatIDR(today.tip)} accent />
-        </div>
-      </div>
+      </section>
 
-      {/* Ringkasan status */}
-      <div className="mt-3 grid grid-cols-4 gap-2">
-
-        {TABS.map(({ key, label, icon: Icon }) => (
-          <div
-            key={key}
-            className="rounded-2xl border border-border bg-card/60 px-3 py-2.5 text-center"
-          >
-            <Icon className="mx-auto size-4 text-primary" />
-            <p className="mt-1 text-lg font-bold text-foreground">{counts[key] ?? 0}</p>
-            <p className="label-caps text-muted-foreground">{t(label)}</p>
-          </div>
-        ))}
-      </div>
-
-
-      <div className="mt-4">
-        <SectionLabel
-          action={
-            <button
-              type="button"
-              onClick={() => {
-                setLoading(true);
-                void load();
-              }}
-              className="inline-flex items-center gap-1 rounded-lg border border-border px-2 py-1 text-[0.68rem] uppercase text-muted-foreground"
-            >
-              <RefreshCw className="size-3" /> {t("Muat ulang")}
-            </button>
-          }
-        >
-          {t("Antrian pesanan")}
-        </SectionLabel>
-      </div>
-
-      {/* Cari pesanan */}
-      <label className="mt-3 flex items-center gap-2 rounded-2xl border border-border bg-card/60 px-3 py-2.5">
-        <Search className="size-4 text-muted-foreground" />
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={t("Cari nama, pelanggan, atau kode…")}
-          className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground/60"
-        />
-      </label>
-
-      {/* Tab status */}
-      <div className="mt-3 grid grid-cols-4 gap-2">
-
-        {TABS.map(({ key, label }) => (
+      {/* Antrian */}
+      <section className="mt-7">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <SectionLabel>{t("Antrian pesanan")}</SectionLabel>
           <button
-            key={key}
             type="button"
-            onClick={() => setTab(key)}
-            className={`rounded-2xl border px-2 py-2 text-xs font-semibold uppercase tracking-[0.08em] ${
-              tab === key
-                ? "border-primary/60 bg-primary/10 text-primary"
-                : "border-border text-muted-foreground"
-            }`}
+            onClick={() => {
+              setLoading(true);
+              void load();
+            }}
+            className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card/60 px-3.5 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.08em] text-muted-foreground transition-colors hover:text-primary"
           >
-            {t(label)} · {counts[key] ?? 0}
+            <RefreshCw className="size-3" /> {t("Muat ulang")}
           </button>
-        ))}
-      </div>
+        </div>
+
+        <div className="mt-3 flex flex-col gap-3 md:flex-row md:items-center">
+          <label className="flex flex-1 items-center gap-2 rounded-2xl border border-border bg-card/60 px-3.5 py-2.5">
+            <Search className="size-4 text-muted-foreground" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={t("Cari nama, pelanggan, atau kode…")}
+              className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground/60"
+            />
+          </label>
+          <div
+            role="tablist"
+            aria-label={t("Antrian pesanan")}
+            className="grid grid-cols-4 rounded-full border border-border bg-card/60 p-1"
+          >
+            {TABS.map(({ key, label }) => (
+              <button
+                key={key}
+                type="button"
+                role="tab"
+                aria-selected={tab === key}
+                onClick={() => setTab(key)}
+                className={`whitespace-nowrap rounded-full px-3 py-1.5 text-[0.7rem] font-semibold uppercase tracking-[0.08em] transition-colors ${
+                  tab === key
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {t(label)} · {counts[key] ?? 0}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
 
@@ -296,12 +283,12 @@ function BaristaPanel() {
           <Loader2 className="size-4 animate-spin" /> {t("Memuat…")}
         </p>
       ) : list.length ? (
-        <ul className="mt-4 space-y-3">
+        <ul className="mt-4 grid gap-3 md:grid-cols-2">
           {list.map((o) => {
             const lines = Array.isArray(o.lines) ? (o.lines as Line[]) : [];
             const busy = busyId === o.id;
             return (
-              <li key={o.id} className="rounded-2xl border border-border bg-card/60 p-4">
+              <li key={o.id} className="flex flex-col rounded-2xl border border-border bg-card/60 p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="flex items-center gap-2 font-semibold text-foreground">
@@ -348,7 +335,7 @@ function BaristaPanel() {
                   </p>
                 )}
 
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="mt-auto flex flex-wrap gap-2 pt-3">
                   {o.status === "dibatalkan" ? (
                     <span className="inline-flex items-center gap-1 rounded-xl border border-destructive/50 bg-destructive/10 px-3 py-1.5 text-xs font-semibold text-destructive">
                       <Ban className="size-3" /> {t("Dibatalkan pelanggan")}
@@ -394,7 +381,7 @@ function BaristaPanel() {
           })}
         </ul>
       ) : (
-        <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+        <p className="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-card/30 px-4 py-8 text-sm text-muted-foreground">
           <Coffee className="size-4" /> {t("Tidak ada pesanan pada status ini.")}
         </p>
       )}
@@ -406,17 +393,20 @@ function RecapStat({
   label,
   value,
   accent,
+  icon: Icon,
 }: {
   label: string;
   value: string;
   accent?: boolean;
+  icon?: typeof Coffee;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-background/40 p-3">
-      <p className="text-[0.68rem] uppercase tracking-[0.1em] text-muted-foreground">{label}</p>
-      <p
-        className={`display-title mt-1 text-base font-bold ${accent ? "text-primary" : "text-foreground"}`}
-      >
+    <div className="rounded-2xl border border-border bg-card/60 p-3.5">
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-[0.68rem] uppercase tracking-[0.1em] text-muted-foreground">{label}</p>
+        {Icon && <Icon className="size-4 shrink-0 text-primary/70" />}
+      </div>
+      <p className={`display-title mt-2 text-xl font-bold ${accent ? "text-primary" : "text-foreground"}`}>
         {value}
       </p>
     </div>

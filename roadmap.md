@@ -62,3 +62,6 @@ Sumber tunggal: PDF "Rangkuman UI/UX Digital Barista Scoffey 1–14" (DESIGN FLO
 - [x] Hapus kolom "Batas minimum" di tabel stok
 - [x] Hapus field "Minimum level" di form Tambah bahan (status MENIPIS hanya saat jumlah = 0)
 - [x] Hapus tombol "Print stock" di atas; fitur cetak dipindah ke sebelah judul Daftar stok (kolom Minimum juga dihapus dari laporan cetak)
+
+## Halaman Barista
+- [x] Rapikan tata letak halaman barista agar serapi halaman admin
