@@ -42,7 +42,7 @@ export const devListRows = createServerFn({ method: "POST" })
       .order("created_at", { ascending: false })
       .limit(500);
     if (error) throw new Error(error.message);
-    return JSON.parse(JSON.stringify(rows ?? [])) as Record<string, unknown>[];
+    return JSON.stringify(rows ?? []);
   });
 
 export const devSaveRow = createServerFn({ method: "POST" })

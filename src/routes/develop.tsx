@@ -144,7 +144,7 @@ function DataTab() {
     setLoading(true);
     list({ data: { table } })
       .then((r) => {
-        setRows(r);
+        setRows(JSON.parse(r) as Record<string, unknown>[]);
         setMsg(null);
       })
       .catch((e) => setMsg(errMsg(e)))
