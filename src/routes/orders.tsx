@@ -218,7 +218,6 @@ function OrdersPage() {
     );
   }, [rows, filter, query]);
 
-  const spend = useMemo(() => rows.reduce((sum, r) => sum + r.total, 0), [rows]);
 
   /** Jumlah pesanan per status untuk ditampilkan sebagai angka di tombol filter. */
   const statusCount = useMemo(() => {
@@ -238,11 +237,16 @@ function OrdersPage() {
   }, [rows]);
 
 
-  /** Rekap per menu: jumlah terjual dan statusnya. */
-  const menuRecap = useMemo(() => buildRecap(rows, menu), [rows, menu]);
-
   const todayRows = useMemo(() => rows.filter((r) => isToday(r.created_at)), [rows]);
   const todayRecap = useMemo(() => buildRecap(todayRows, menu), [todayRows, menu]);
+
+  /** Rekap per menu: staf hanya melihat pesanan hari ini. */
+  const menuRecap = useMemo(
+    () => (isBarista ? todayRecap : buildRecap(rows, menu)),
+    [isBarista, todayRecap, rows, menu],
+  );
+  const summaryRows = isBarista ? todayRows : rows;
+  const summarySpend = summaryRows.reduce((sum, r) => sum + r.total, 0);
 
   function cetakLaporan() {
     const ok = printDailyReport(todayRows, todayRecap);
@@ -303,20 +307,20 @@ function OrdersPage() {
     >
       <div className="mt-1 grid grid-cols-2 gap-2">
         <div className="rounded-2xl border border-border bg-card/60 px-3 py-2.5 text-center">
-          <p className="text-lg font-bold text-foreground">{rows.length}</p>
-          <p className="label-caps text-muted-foreground">{t("Total pesanan")}</p>
+          <p className="text-lg font-bold text-foreground">{summaryRows.length}</p>
+          <p className="label-caps text-muted-foreground">{isBarista ? t("Pesanan hari ini") : t("Total pesanan")}</p>
         </div>
         <div className="rounded-2xl border border-border bg-card/60 px-3 py-2.5 text-center">
-          <p className="text-lg font-bold text-primary">{formatIDR(spend)}</p>
+          <p className="text-lg font-bold text-primary">{formatIDR(summarySpend)}</p>
           <p className="label-caps text-muted-foreground">
-            {isBarista ? t("Nilai pesanan") : t("Total belanja")}
+            {isBarista ? t("Nilai pesanan hari ini") : t("Total belanja")}
           </p>
         </div>
       </div>
 
       <>
           <div className="mt-4">
-            <SectionLabel>{t("Rekap menu")}</SectionLabel>
+            <SectionLabel>{isBarista ? t("Rekap menu hari ini") : t("Rekap menu")}</SectionLabel>
           </div>
           <div className="mt-2 overflow-hidden rounded-2xl border border-border bg-card/60">
             <div className="grid grid-cols-[1fr_auto_auto_auto_auto] gap-2 border-b border-border/60 px-3 py-2 text-[0.6rem] uppercase tracking-[0.08em] text-muted-foreground">
