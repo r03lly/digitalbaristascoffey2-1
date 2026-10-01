@@ -63,7 +63,7 @@ function errMsg(e: unknown) {
 }
 
 function DevelopPage() {
-  const { authReady, roles } = useBarista() as ReturnType<typeof useBarista> & { roles?: string[] };
+  const { authReady, roles } = useBarista();
   const [isDev, setIsDev] = useState<boolean | null>(null);
   const [tab, setTab] = useState<Tab>("data");
   const listUsers = useServerFn(devListUsers);

@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { BarChart3, CalendarClock, ClipboardList, Coffee, Heart, LogOut, Sparkles, Trash2, User } from "lucide-react";
+import { BarChart3, Wrench, CalendarClock, ClipboardList, Coffee, Heart, LogOut, Sparkles, Trash2, User } from "lucide-react";
 import { OutlineButton, PhoneShell } from "@/components/PhoneShell";
 import { formatIDR } from "@/lib/barista-data";
 import { useBarista } from "@/lib/barista-store";
@@ -251,6 +251,14 @@ function ProfilePage() {
             className="flex items-center justify-center gap-2 rounded-2xl border border-primary/60 py-3.5 text-sm font-semibold tracking-[0.12em] text-primary uppercase transition-colors hover:bg-accent"
           >
             <BarChart3 className="size-4" /> {t("Dashboard Admin")}
+          </Link>
+        )}
+        {roles.includes("developer") && (
+          <Link
+            to="/develop"
+            className="flex items-center justify-center gap-2 rounded-2xl border border-primary/60 py-3.5 text-sm font-semibold tracking-[0.12em] text-primary uppercase transition-colors hover:bg-accent"
+          >
+            <Wrench className="size-4" /> {t("Panel Developer")}
           </Link>
         )}
         <button
