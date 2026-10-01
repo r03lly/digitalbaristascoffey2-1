@@ -218,7 +218,6 @@ function OrdersPage() {
     );
   }, [rows, filter, query]);
 
-  const spend = useMemo(() => rows.reduce((sum, r) => sum + r.total, 0), [rows]);
 
   /** Jumlah pesanan per status untuk ditampilkan sebagai angka di tombol filter. */
   const statusCount = useMemo(() => {
