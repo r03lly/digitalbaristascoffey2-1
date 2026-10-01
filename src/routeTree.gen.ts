@@ -39,6 +39,7 @@ import { Route as CreateRecipeRouteImport } from './routes/create/recipe'
 import { Route as CreateResultRouteImport } from './routes/create/result'
 import { Route as CreateTasteRouteImport } from './routes/create/taste'
 import { Route as TrackCodeRouteImport } from './routes/track.$code'
+import { Route as ApiPublicCronDailyBackupRouteImport } from './routes/api/public/cron/daily-backup'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -190,6 +191,12 @@ const TrackCodeRoute = TrackCodeRouteImport.update({
   path: '/track/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCronDailyBackupRoute =
+  ApiPublicCronDailyBackupRouteImport.update({
+    id: '/api/public/cron/daily-backup',
+    path: '/api/public/cron/daily-backup',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -222,6 +229,7 @@ export interface FileRoutesByFullPath {
   '/create/result': typeof CreateResultRoute
   '/create/taste': typeof CreateTasteRoute
   '/track/$code': typeof TrackCodeRoute
+  '/api/public/cron/daily-backup': typeof ApiPublicCronDailyBackupRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -254,6 +262,7 @@ export interface FileRoutesByTo {
   '/create/result': typeof CreateResultRoute
   '/create/taste': typeof CreateTasteRoute
   '/track/$code': typeof TrackCodeRoute
+  '/api/public/cron/daily-backup': typeof ApiPublicCronDailyBackupRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -287,6 +296,7 @@ export interface FileRoutesById {
   '/create/result': typeof CreateResultRoute
   '/create/taste': typeof CreateTasteRoute
   '/track/$code': typeof TrackCodeRoute
+  '/api/public/cron/daily-backup': typeof ApiPublicCronDailyBackupRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -321,6 +331,7 @@ export interface FileRouteTypes {
     | '/create/result'
     | '/create/taste'
     | '/track/$code'
+    | '/api/public/cron/daily-backup'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -353,6 +364,7 @@ export interface FileRouteTypes {
     | '/create/result'
     | '/create/taste'
     | '/track/$code'
+    | '/api/public/cron/daily-backup'
   id:
     | '__root__'
     | '/'
@@ -385,6 +397,7 @@ export interface FileRouteTypes {
     | '/create/result'
     | '/create/taste'
     | '/track/$code'
+    | '/api/public/cron/daily-backup'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -418,6 +431,7 @@ export interface RootRouteChildren {
   CreateResultRoute: typeof CreateResultRoute
   CreateTasteRoute: typeof CreateTasteRoute
   TrackCodeRoute: typeof TrackCodeRoute
+  ApiPublicCronDailyBackupRoute: typeof ApiPublicCronDailyBackupRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -632,6 +646,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/cron/daily-backup': {
+      id: '/api/public/cron/daily-backup'
+      path: '/api/public/cron/daily-backup'
+      fullPath: '/api/public/cron/daily-backup'
+      preLoaderRoute: typeof ApiPublicCronDailyBackupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -666,6 +687,7 @@ const rootRouteChildren: RootRouteChildren = {
   CreateResultRoute: CreateResultRoute,
   CreateTasteRoute: CreateTasteRoute,
   TrackCodeRoute: TrackCodeRoute,
+  ApiPublicCronDailyBackupRoute: ApiPublicCronDailyBackupRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
