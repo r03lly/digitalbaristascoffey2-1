@@ -39,7 +39,6 @@ import { Route as CreateRecipeRouteImport } from './routes/create/recipe'
 import { Route as CreateResultRouteImport } from './routes/create/result'
 import { Route as CreateTasteRouteImport } from './routes/create/taste'
 import { Route as TrackCodeRouteImport } from './routes/track.$code'
-import { Route as ApiPublicSeedDevRouteImport } from './routes/api/public/seed-dev'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -191,11 +190,6 @@ const TrackCodeRoute = TrackCodeRouteImport.update({
   path: '/track/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicSeedDevRoute = ApiPublicSeedDevRouteImport.update({
-  id: '/api/public/seed-dev',
-  path: '/api/public/seed-dev',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -228,7 +222,6 @@ export interface FileRoutesByFullPath {
   '/create/result': typeof CreateResultRoute
   '/create/taste': typeof CreateTasteRoute
   '/track/$code': typeof TrackCodeRoute
-  '/api/public/seed-dev': typeof ApiPublicSeedDevRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -261,7 +254,6 @@ export interface FileRoutesByTo {
   '/create/result': typeof CreateResultRoute
   '/create/taste': typeof CreateTasteRoute
   '/track/$code': typeof TrackCodeRoute
-  '/api/public/seed-dev': typeof ApiPublicSeedDevRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -295,7 +287,6 @@ export interface FileRoutesById {
   '/create/result': typeof CreateResultRoute
   '/create/taste': typeof CreateTasteRoute
   '/track/$code': typeof TrackCodeRoute
-  '/api/public/seed-dev': typeof ApiPublicSeedDevRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -330,7 +321,6 @@ export interface FileRouteTypes {
     | '/create/result'
     | '/create/taste'
     | '/track/$code'
-    | '/api/public/seed-dev'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -363,7 +353,6 @@ export interface FileRouteTypes {
     | '/create/result'
     | '/create/taste'
     | '/track/$code'
-    | '/api/public/seed-dev'
   id:
     | '__root__'
     | '/'
@@ -396,7 +385,6 @@ export interface FileRouteTypes {
     | '/create/result'
     | '/create/taste'
     | '/track/$code'
-    | '/api/public/seed-dev'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -430,7 +418,6 @@ export interface RootRouteChildren {
   CreateResultRoute: typeof CreateResultRoute
   CreateTasteRoute: typeof CreateTasteRoute
   TrackCodeRoute: typeof TrackCodeRoute
-  ApiPublicSeedDevRoute: typeof ApiPublicSeedDevRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -645,13 +632,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrackCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/seed-dev': {
-      id: '/api/public/seed-dev'
-      path: '/api/public/seed-dev'
-      fullPath: '/api/public/seed-dev'
-      preLoaderRoute: typeof ApiPublicSeedDevRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -686,7 +666,6 @@ const rootRouteChildren: RootRouteChildren = {
   CreateResultRoute: CreateResultRoute,
   CreateTasteRoute: CreateTasteRoute,
   TrackCodeRoute: TrackCodeRoute,
-  ApiPublicSeedDevRoute: ApiPublicSeedDevRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
