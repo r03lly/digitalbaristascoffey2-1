@@ -64,4 +64,4 @@ Sumber tunggal: PDF "Rangkuman UI/UX Digital Barista Scoffey 1–14" (DESIGN FLO
 - [x] Hapus tombol "Print stock" di atas; fitur cetak dipindah ke sebelah judul Daftar stok (kolom Minimum juga dihapus dari laporan cetak)
 
 ## Halaman Barista
-- [ ] Rapikan tata letak halaman barista agar serapi halaman admin
+- [x] Rapikan tata letak halaman barista agar serapi halaman admin

@@ -283,12 +283,12 @@ function BaristaPanel() {
           <Loader2 className="size-4 animate-spin" /> {t("Memuat…")}
         </p>
       ) : list.length ? (
-        <ul className="mt-4 space-y-3">
+        <ul className="mt-4 grid gap-3 md:grid-cols-2">
           {list.map((o) => {
             const lines = Array.isArray(o.lines) ? (o.lines as Line[]) : [];
             const busy = busyId === o.id;
             return (
-              <li key={o.id} className="rounded-2xl border border-border bg-card/60 p-4">
+              <li key={o.id} className="flex flex-col rounded-2xl border border-border bg-card/60 p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="flex items-center gap-2 font-semibold text-foreground">
@@ -335,7 +335,7 @@ function BaristaPanel() {
                   </p>
                 )}
 
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="mt-auto flex flex-wrap gap-2 pt-3">
                   {o.status === "dibatalkan" ? (
                     <span className="inline-flex items-center gap-1 rounded-xl border border-destructive/50 bg-destructive/10 px-3 py-1.5 text-xs font-semibold text-destructive">
                       <Ban className="size-3" /> {t("Dibatalkan pelanggan")}
@@ -381,7 +381,7 @@ function BaristaPanel() {
           })}
         </ul>
       ) : (
-        <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+        <p className="mt-4 flex items-center justify-center gap-2 rounded-2xl border border-dashed border-border bg-card/30 px-4 py-8 text-sm text-muted-foreground">
           <Coffee className="size-4" /> {t("Tidak ada pesanan pada status ini.")}
         </p>
       )}
@@ -393,17 +393,20 @@ function RecapStat({
   label,
   value,
   accent,
+  icon: Icon,
 }: {
   label: string;
   value: string;
   accent?: boolean;
+  icon?: typeof Coffee;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-background/40 p-3">
-      <p className="text-[0.68rem] uppercase tracking-[0.1em] text-muted-foreground">{label}</p>
-      <p
-        className={`display-title mt-1 text-base font-bold ${accent ? "text-primary" : "text-foreground"}`}
-      >
+    <div className="rounded-2xl border border-border bg-card/60 p-3.5">
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-[0.68rem] uppercase tracking-[0.1em] text-muted-foreground">{label}</p>
+        {Icon && <Icon className="size-4 shrink-0 text-primary/70" />}
+      </div>
+      <p className={`display-title mt-2 text-xl font-bold ${accent ? "text-primary" : "text-foreground"}`}>
         {value}
       </p>
     </div>
