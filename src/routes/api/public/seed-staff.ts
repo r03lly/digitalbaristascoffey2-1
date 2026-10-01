@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+// Temporary one-time staff setup. Removed after use.
 export const Route = createFileRoute("/api/public/seed-staff")({
   server: {
     handlers: {
