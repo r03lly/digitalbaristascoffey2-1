@@ -65,6 +65,11 @@ function FinancePage() {
     });
     return [...m.entries()].sort((a, b) => b[1].total - a[1].total);
   }, [orders]);
+  const [payFilter, setPayFilter] = useState("");
+  const shown = useMemo(
+    () => (payFilter ? orders.filter((o) => (o.payment || "-") === payFilter) : orders),
+    [orders, payFilter],
+  );
 
   async function add(e: React.FormEvent) {
     e.preventDefault();
@@ -159,7 +164,13 @@ function FinancePage() {
       </section>
 
       <section className="mt-5">
-        <SectionLabel>{t("Rincian pemasukan")}</SectionLabel>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <SectionLabel>{t("Rincian pemasukan")}</SectionLabel>
+          <select aria-label={t("Filter pembayaran")} value={payFilter} onChange={(e) => setPayFilter(e.target.value)} className="rounded-xl border border-input bg-background/40 px-3 py-1.5 text-sm text-foreground">
+            <option value="">{t("Semua pembayaran")}</option>
+            {byPay.map(([k]) => <option key={k} value={k}>{k}</option>)}
+          </select>
+        </div>
         <div className="mt-2 max-h-[28rem] overflow-auto rounded-2xl border border-border bg-card/60">
           <table className="w-full min-w-[640px] text-sm">
             <thead className="sticky top-0 bg-card text-left text-[0.68rem] uppercase tracking-[0.08em] text-muted-foreground">
@@ -170,7 +181,7 @@ function FinancePage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {orders.map((o) => (
+              {shown.map((o) => (
                 <tr key={o.id}>
                   <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{new Date(o.when).toLocaleString(locale(), { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}</td>
                   <td className="px-3 py-2 text-muted-foreground">{o.id}</td>
@@ -180,12 +191,12 @@ function FinancePage() {
                   <td className="whitespace-nowrap px-3 py-2 text-right font-semibold text-primary">{formatIDR(o.total)}</td>
                 </tr>
               ))}
-              {!orders.length && <tr><td colSpan={6} className="px-3 py-3 text-muted-foreground">{t("Belum ada transaksi.")}</td></tr>}
+              {!shown.length && <tr><td colSpan={6} className="px-3 py-3 text-muted-foreground">{t("Belum ada transaksi.")}</td></tr>}
             </tbody>
-            {orders.length > 0 && (
+            {shown.length > 0 && (
               <tfoot><tr className="border-t border-border font-semibold">
-                <td colSpan={5} className="px-3 py-2 text-foreground">{t("Total")}</td>
-                <td className="px-3 py-2 text-right text-primary">{formatIDR(income)}</td>
+                <td colSpan={5} className="px-3 py-2 text-foreground">{t("Total")} ({shown.length})</td>
+                <td className="px-3 py-2 text-right text-primary">{formatIDR(shown.reduce((s, o) => s + o.total, 0))}</td>
               </tr></tfoot>
             )}
           </table>
