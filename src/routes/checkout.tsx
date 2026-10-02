@@ -371,7 +371,7 @@ function CheckoutPage() {
 
           {!userId && (
             <section className="mt-4">
-              <h3 className="label-caps text-primary">{t("Nama pemesan")}</h3>
+              <h3 className="label-caps text-primary">{t("Nama pemesan")} ({t("opsional")})</h3>
               <input
                 value={customerName}
                 onChange={(e) => {
@@ -587,10 +587,6 @@ function CheckoutPage() {
           <div className="mt-5">
             <GoldButton
               onClick={() => {
-                if (!userId && !customerName.trim()) {
-                  setNameError(true);
-                  return;
-                }
                 if (phone.trim() && phone.replace(/^0+/, "").length < 9) {
                   setPhoneError(true);
                   return;
