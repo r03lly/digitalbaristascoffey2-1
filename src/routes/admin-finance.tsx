@@ -56,6 +56,15 @@ function FinancePage() {
     exp.forEach((e) => m.set(e.category, (m.get(e.category) ?? 0) + e.amount));
     return [...m.entries()].sort((a, b) => b[1] - a[1]);
   }, [exp]);
+  const byPay = useMemo(() => {
+    const m = new Map<string, { count: number; total: number }>();
+    orders.forEach((o) => {
+      const k = o.payment || "-";
+      const p = m.get(k) ?? { count: 0, total: 0 };
+      m.set(k, { count: p.count + 1, total: p.total + o.total });
+    });
+    return [...m.entries()].sort((a, b) => b[1].total - a[1].total);
+  }, [orders]);
 
   async function add(e: React.FormEvent) {
     e.preventDefault();
@@ -134,6 +143,84 @@ function FinancePage() {
       </button>
 
       {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
+
+      <section className="mt-5">
+        <SectionLabel>{t("Metode pembayaran")}</SectionLabel>
+        {byPay.length ? (
+          <div className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-4">
+            {byPay.map(([k, v]) => (
+              <div key={k} className="rounded-2xl border border-border bg-card/60 p-3">
+                <p className="text-[0.68rem] uppercase tracking-[0.1em] text-muted-foreground">{k} · {v.count}x</p>
+                <p className="display-title mt-1 text-lg font-bold text-primary">{formatIDR(v.total)}</p>
+              </div>
+            ))}
+          </div>
+        ) : <p className="mt-2 text-sm text-muted-foreground">{t("Belum ada transaksi.")}</p>}
+      </section>
+
+      <section className="mt-5">
+        <SectionLabel>{t("Rincian pemasukan")}</SectionLabel>
+        <div className="mt-2 max-h-[28rem] overflow-auto rounded-2xl border border-border bg-card/60">
+          <table className="w-full min-w-[640px] text-sm">
+            <thead className="sticky top-0 bg-card text-left text-[0.68rem] uppercase tracking-[0.08em] text-muted-foreground">
+              <tr>
+                <th className="px-3 py-2">{t("Waktu")}</th><th className="px-3 py-2">{t("Kode")}</th>
+                <th className="px-3 py-2">{t("Pelanggan")}</th><th className="px-3 py-2">{t("Menu")}</th>
+                <th className="px-3 py-2">{t("Pembayaran")}</th><th className="px-3 py-2 text-right">{t("Total")}</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {orders.map((o) => (
+                <tr key={o.id}>
+                  <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{new Date(o.when).toLocaleString(locale(), { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })}</td>
+                  <td className="px-3 py-2 text-muted-foreground">{o.id}</td>
+                  <td className="px-3 py-2 text-foreground">{o.customer || "-"}</td>
+                  <td className="px-3 py-2 text-foreground">{o.name}</td>
+                  <td className="px-3 py-2 text-muted-foreground">{o.payment || "-"}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-right font-semibold text-primary">{formatIDR(o.total)}</td>
+                </tr>
+              ))}
+              {!orders.length && <tr><td colSpan={6} className="px-3 py-3 text-muted-foreground">{t("Belum ada transaksi.")}</td></tr>}
+            </tbody>
+            {orders.length > 0 && (
+              <tfoot><tr className="border-t border-border font-semibold">
+                <td colSpan={5} className="px-3 py-2 text-foreground">{t("Total")}</td>
+                <td className="px-3 py-2 text-right text-primary">{formatIDR(income)}</td>
+              </tr></tfoot>
+            )}
+          </table>
+        </div>
+      </section>
+
+      <section className="mt-5">
+        <SectionLabel>{t("Pengeluaran")}</SectionLabel>
+        <form onSubmit={add} className="mt-2 grid gap-2 rounded-2xl border border-border bg-card/60 p-3 md:grid-cols-5">
+          <input type="date" className={input} value={draft.spent_on} onChange={(e) => setDraft({ ...draft, spent_on: e.target.value })} />
+          <select className={input} value={draft.category} onChange={(e) => setDraft({ ...draft, category: e.target.value })}>
+            {CATEGORIES.map((c) => <option key={c} value={c}>{t(c)}</option>)}
+          </select>
+          <input className={input} placeholder={t("Keterangan")} value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} />
+          <input type="number" min="0" className={input} placeholder={t("Nominal")} value={draft.amount} onChange={(e) => setDraft({ ...draft, amount: e.target.value })} />
+          <button disabled={saving} className="inline-flex items-center justify-center gap-1 rounded-xl bg-primary px-3 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-60">
+            <Plus className="size-4" /> {t("Tambah")}
+          </button>
+        </form>
+        <ul className="mt-2 divide-y divide-border rounded-2xl border border-border bg-card/60">
+          {exp.map((e) => (
+            <li key={e.id} className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm">
+              <div className="min-w-0">
+                <p className="truncate text-foreground">{t(e.category)}{e.description ? ` — ${e.description}` : ""}</p>
+                <p className="text-xs text-muted-foreground">{e.spent_on}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-primary">{formatIDR(e.amount)}</span>
+                <button type="button" onClick={() => remove(e.id)} aria-label={t("Hapus")} className="rounded-lg p-1.5 text-muted-foreground hover:text-destructive"><Trash2 className="size-4" /></button>
+              </div>
+            </li>
+          ))}
+          {!exp.length && <li className="px-4 py-3 text-sm text-muted-foreground">{t("Belum ada pengeluaran.")}</li>}
+        </ul>
+      </section>
 
       {byCat.length > 0 && (
         <section className="mt-5">
