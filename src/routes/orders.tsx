@@ -246,6 +246,18 @@ function OrdersPage() {
     [isBarista, todayRecap, rows, menu],
   );
   const summaryRows = isBarista ? todayRows : rows;
+  const [payFilter, setPayFilter] = useState("");
+  const todayPaid = useMemo(() => todayRows.filter((r) => (r.status || "baru") !== "dibatalkan"), [todayRows]);
+  const payRecap = useMemo(() => {
+    const m = new Map<string, { count: number; total: number }>();
+    todayPaid.forEach((o) => {
+      const k = o.payment || "-";
+      const p = m.get(k) ?? { count: 0, total: 0 };
+      m.set(k, { count: p.count + 1, total: p.total + o.total });
+    });
+    return [...m.entries()].sort((a, b) => b[1].total - a[1].total);
+  }, [todayPaid]);
+  const payShown = payFilter ? todayPaid.filter((o) => (o.payment || "-") === payFilter) : todayPaid;
   const summarySpend = summaryRows.reduce((sum, r) => sum + r.total, 0);
 
   function cetakLaporan() {
@@ -375,6 +387,60 @@ function OrdersPage() {
           </button>
         </div>
       </div>
+
+      {isBarista && (
+        <section className="mt-4">
+          <SectionLabel>{t("Metode pembayaran hari ini")}</SectionLabel>
+          {payRecap.length ? (
+            <div className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-4">
+              {payRecap.map(([k, v]) => (
+                <div key={k} className="rounded-2xl border border-border bg-card/60 p-3">
+                  <p className="text-[0.68rem] uppercase tracking-[0.1em] text-muted-foreground">{k} · {v.count}x</p>
+                  <p className="mt-1 text-base font-bold text-primary">{formatIDR(v.total)}</p>
+                </div>
+              ))}
+            </div>
+          ) : <p className="mt-2 text-sm text-muted-foreground">{t("Belum ada transaksi.")}</p>}
+
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
+            <SectionLabel>{t("Rincian pemasukan hari ini")}</SectionLabel>
+            <select aria-label={t("Filter pembayaran")} value={payFilter} onChange={(e) => setPayFilter(e.target.value)} className="rounded-xl border border-input bg-background/40 px-3 py-1.5 text-sm text-foreground">
+              <option value="">{t("Semua pembayaran")}</option>
+              {payRecap.map(([k]) => <option key={k} value={k}>{k}</option>)}
+            </select>
+          </div>
+          <div className="mt-2 max-h-[24rem] overflow-auto rounded-2xl border border-border bg-card/60">
+            <table className="w-full min-w-[560px] text-sm">
+              <thead className="sticky top-0 bg-card text-left text-[0.68rem] uppercase tracking-[0.08em] text-muted-foreground">
+                <tr>
+                  <th className="px-3 py-2">{t("Waktu")}</th><th className="px-3 py-2">{t("Kode")}</th>
+                  <th className="px-3 py-2">{t("Pelanggan")}</th><th className="px-3 py-2">{t("Menu")}</th>
+                  <th className="px-3 py-2">{t("Pembayaran")}</th><th className="px-3 py-2 text-right">{t("Total")}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {payShown.map((o) => (
+                  <tr key={o.id}>
+                    <td className="whitespace-nowrap px-3 py-2 text-muted-foreground">{new Date(o.created_at).toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })}</td>
+                    <td className="px-3 py-2 text-muted-foreground">{o.code}</td>
+                    <td className="px-3 py-2 text-foreground">{o.customer || "-"}</td>
+                    <td className="px-3 py-2 text-foreground">{o.name}</td>
+                    <td className="px-3 py-2 text-muted-foreground">{o.payment || "-"}</td>
+                    <td className="whitespace-nowrap px-3 py-2 text-right font-semibold text-primary">{formatIDR(o.total)}</td>
+                  </tr>
+                ))}
+                {!payShown.length && <tr><td colSpan={6} className="px-3 py-3 text-muted-foreground">{t("Belum ada transaksi.")}</td></tr>}
+              </tbody>
+              {payShown.length > 0 && (
+                <tfoot><tr className="border-t border-border font-semibold">
+                  <td colSpan={5} className="px-3 py-2 text-foreground">{t("Total")} ({payShown.length})</td>
+                  <td className="px-3 py-2 text-right text-primary">{formatIDR(payShown.reduce((s, o) => s + o.total, 0))}</td>
+                </tr></tfoot>
+              )}
+            </table>
+          </div>
+        </section>
+      )}
 
 
 
