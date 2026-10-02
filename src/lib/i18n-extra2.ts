@@ -70,6 +70,7 @@ export const EN_EXTRA2: Record<string, string> = {
   Hapus: "Remove",
   "Tambah menu lain": "Add another item",
   "Nama pemesan": "Customer name",
+  opsional: "optional",
   "Tulis namamu supaya barista tahu pesanan ini milik siapa":
     "Write your name so the barista knows whose order this is",
   "Nama pemesan wajib diisi sebelum konfirmasi pesanan.":
