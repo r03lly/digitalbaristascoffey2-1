@@ -70,17 +70,16 @@ export function printDailyReport(rows: ReportRow[], recap: ReportRecap[]) {
         .join("")
     : `<tr><td colspan="7" class="c">${esc(t("Belum ada pesanan hari ini."))}</td></tr>`;
 
-  const recapRows = recap
-    .filter((m) => m.sold > 0)
-    .map(
-      (m) => `<tr>
-      <td>${esc(`${m.emoji ? m.emoji + " " : ""}${m.name}`)}</td>
-      <td class="r">${m.sold}</td>
-      <td class="r">${m.baru}</td>
-      <td class="r">${m.diproses}</td>
-      <td class="r">${m.selesai}</td>
-    </tr>`,
-    )
+  void recap;
+  const pay = new Map<string, { count: number; total: number }>();
+  rows.forEach((r) => {
+    const k = r.payment || "-";
+    const p = pay.get(k) ?? { count: 0, total: 0 };
+    pay.set(k, { count: p.count + 1, total: p.total + r.total });
+  });
+  const payRows = [...pay.entries()]
+    .sort((a, b) => b[1].total - a[1].total)
+    .map(([k, v]) => `<tr><td>${esc(k)}</td><td class="r">${v.count}</td><td class="r">${formatIDR(v.total)}</td></tr>`)
     .join("");
 
   const html = `<!doctype html><html lang="${getLang()}"><head><meta charset="utf-8">
@@ -115,7 +114,7 @@ export function printDailyReport(rows: ReportRow[], recap: ReportRecap[]) {
 <table><thead><tr><th>${esc(t("Jam"))}</th><th>${esc(t("Kode"))}</th><th>${esc(t("Pelanggan"))}</th><th>${esc(t("Menu"))}</th><th>${esc(t("Bayar"))}</th><th>${esc(t("Status"))}</th><th class="r">Total</th></tr></thead>
 <tbody>${orderRows}</tbody>
 <tfoot><tr><td colspan="6">${esc(t("Total"))}</td><td class="r">${formatIDR(omzet)}</td></tr></tfoot></table>
-${recapRows ? `<h2>${esc(t("Rekap Menu"))}</h2><table><thead><tr><th>${esc(t("Menu"))}</th><th class="r">${esc(t("Semua"))}</th><th class="r">${esc(t("Menunggu"))}</th><th class="r">${esc(t("Diproses"))}</th><th class="r">${esc(t("Selesai"))}</th></tr></thead><tbody>${recapRows}</tbody></table>` : ""}
+${payRows ? `<h2>${esc(t("Metode pembayaran"))}</h2><table><thead><tr><th>${esc(t("Bayar"))}</th><th class="r">${esc(t("Pesanan"))}</th><th class="r">Total</th></tr></thead><tbody>${payRows}</tbody></table>` : ""}
 <script>window.onload=function(){window.print()}</script>
 </body></html>`;
 

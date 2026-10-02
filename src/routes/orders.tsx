@@ -261,7 +261,7 @@ function OrdersPage() {
   const summarySpend = summaryRows.reduce((sum, r) => sum + r.total, 0);
 
   function cetakLaporan() {
-    const ok = printDailyReport(todayRows, todayRecap);
+    const ok = printDailyReport(payShown, []);
     if (!ok) setError(t("Izinkan pop-up di browser untuk mencetak laporan."));
   }
 
