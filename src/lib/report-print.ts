@@ -41,7 +41,7 @@ function esc(s: string) {
 }
 
 /** Buka jendela cetak berisi laporan penjualan hari ini. */
-export function printDailyReport(rows: ReportRow[], recap: ReportRecap[]) {
+export function printDailyReport(rows: ReportRow[], recap: ReportRecap[], label = "") {
   const now = new Date();
   const locale = getLang() === "id" ? "id-ID" : "en-GB";
   const tanggal = now.toLocaleDateString(locale, {
@@ -102,7 +102,7 @@ export function printDailyReport(rows: ReportRow[], recap: ReportRecap[]) {
   @media print{body{margin:12mm}}
 </style></head><body>
 <h1>${esc(t("Laporan Penjualan Harian — Scoffey"))}</h1>
-<p class="sub">${tanggal} · ${esc(t("dicetak"))} ${jam}</p>
+<p class="sub">${tanggal}${label ? " · " + esc(label) : ""} · ${esc(t("dicetak"))} ${jam}</p>
 <div class="cards">
   <div class="card"><b>${rows.length}</b><span>${esc(t("Pesanan"))}</span></div>
   <div class="card"><b>${formatIDR(omzet)}</b><span>${esc(t("Omzet"))}</span></div>

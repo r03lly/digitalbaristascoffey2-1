@@ -106,10 +106,15 @@ function FinancePage() {
       ],
       sections: [
         {
-          title: t("Pemasukan (penjualan)"), right: [3],
-          head: [t("Tanggal"), t("Kode"), t("Menu"), t("Total")],
-          rows: orders.map((o) => [new Date(o.when).toLocaleString(locale()), o.id, o.name, formatIDR(o.total)]),
-          foot: [t("Total"), "", "", formatIDR(income)],
+          title: t("Metode pembayaran"), right: [1, 2],
+          head: [t("Pembayaran"), t("Transaksi"), t("Total")],
+          rows: byPay.map(([k, v]) => [k, String(v.count), formatIDR(v.total)]),
+        },
+        {
+          title: `${t("Pemasukan (penjualan)")} — ${payFilter || t("Semua pembayaran")}`, right: [5],
+          head: [t("Tanggal"), t("Kode"), t("Pelanggan"), t("Menu"), t("Pembayaran"), t("Total")],
+          rows: shown.map((o) => [new Date(o.when).toLocaleString(locale()), o.id, o.customer || "-", o.name, o.payment || "-", formatIDR(o.total)]),
+          foot: [t("Total"), "", "", "", "", formatIDR(shown.reduce((s, o) => s + o.total, 0))],
         },
         {
           title: t("Pengeluaran"), right: [3],
