@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       attendance: {
         Row: {
+          barista_name_id: string | null
           check_in: string
           check_out: string | null
           created_at: string
@@ -26,6 +27,7 @@ export type Database = {
           work_date: string
         }
         Insert: {
+          barista_name_id?: string | null
           check_in?: string
           check_out?: string | null
           created_at?: string
@@ -36,6 +38,7 @@ export type Database = {
           work_date?: string
         }
         Update: {
+          barista_name_id?: string | null
           check_in?: string
           check_out?: string | null
           created_at?: string
@@ -44,6 +47,35 @@ export type Database = {
           staff_name?: string
           user_id?: string
           work_date?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_barista_name_id_fkey"
+            columns: ["barista_name_id"]
+            isOneToOne: false
+            referencedRelation: "barista_names"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      barista_names: {
+        Row: {
+          active: boolean
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          id?: string
+          name?: string
         }
         Relationships: []
       }
