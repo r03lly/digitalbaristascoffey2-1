@@ -653,6 +653,11 @@ function CheckoutPage() {
                   kind: hasCart ? "regular" : "signature",
                   lines,
                 });
+                setPlacedCash(
+                  payment === "Tunai di Kasir" && cashPaidNum > 0
+                    ? { paid: cashPaidNum, change: cashChange }
+                    : null,
+                );
                 setPlaced(order);
                 clearCart();
                 navigate({ to: "/checkout" });
