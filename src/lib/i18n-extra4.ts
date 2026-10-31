@@ -81,6 +81,8 @@ export const EN_EXTRA4: Record<string, string> = {
   "Satuan (gram, liter, pcs)": "Unit (gram, litre, pcs)",
   "Batas minimum": "Minimum level",
   Simpan: "Save",
+  Batalkan: "Cancel",
+
   "Min.": "Min.",
   Kurangi: "Decrease",
   "Belum ada bahan. Tambahkan di atas.": "No ingredients yet. Add one above.",
@@ -99,8 +101,6 @@ export const EN_EXTRA4: Record<string, string> = {
   Nonaktifkan: "Deactivate",
   "Ubah nama": "Rename",
   "Hapus nama": "Delete name",
-  Simpan: "Save",
-  Batal: "Cancel",
   "Hapus nama ini? Riwayat presensi tetap tersimpan.": "Delete this name? Attendance history stays saved.",
   "Laporan Presensi Barista — Scoffey": "Barista Attendance Report — Scoffey",
   "Total kehadiran": "Total attendance",
