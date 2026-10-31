@@ -1,5 +1,12 @@
 /** Additional Indonesian source copy -> English (previously untranslated screens). */
 export const EN_EXTRA2: Record<string, string> = {
+  // Checkout — cash payment change calculator
+  "Uang dibayar": "Cash paid",
+  "Kembalian": "Change",
+  "Kurang": "Short by",
+  "Pas": "Exact",
+  "Contoh: 50000": "Example: 50000",
+
   // Reset password / akun
   "Kata sandi baru untuk": "New password for",
   "minimal 8 karakter": "at least 8 characters",
