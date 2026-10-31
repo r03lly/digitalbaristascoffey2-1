@@ -510,6 +510,44 @@ function CheckoutPage() {
                       </p>
                     </div>
                   )}
+
+                  {p.id === "Tunai di Kasir" && payment === "Tunai di Kasir" && (
+                    <div className="mt-2 rounded-2xl border border-primary/40 bg-card/60 p-4 text-sm">
+                      <label className="label-caps text-primary">{t("Uang dibayar")}</label>
+                      <input
+                        value={cashPaid}
+                        onChange={(e) => setCashPaid(e.target.value.replace(/[^\d]/g, "").slice(0, 10))}
+                        inputMode="numeric"
+                        placeholder={t("Contoh: 50000")}
+                        className="mt-2 w-full rounded-2xl border border-input bg-background/40 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                      />
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {Array.from(
+                          new Set([total, ...[20000, 50000, 100000, 200000].filter((v) => v >= total)]),
+                        ).map((v) => (
+                          <button
+                            key={v}
+                            type="button"
+                            onClick={() => setCashPaid(String(v))}
+                            className="rounded-xl border border-primary/50 px-3 py-1.5 text-xs font-semibold text-primary"
+                          >
+                            {v === total ? t("Pas") : formatIDR(v)}
+                          </button>
+                        ))}
+                      </div>
+                      {cashPaidNum > 0 && (
+                        <p
+                          className={`mt-3 text-center text-sm font-semibold ${
+                            cashChange >= 0 ? "text-primary" : "text-destructive"
+                          }`}
+                        >
+                          {cashChange >= 0
+                            ? `${t("Kembalian")}: ${formatIDR(cashChange)}`
+                            : `${t("Kurang")}: ${formatIDR(Math.abs(cashChange))}`}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
