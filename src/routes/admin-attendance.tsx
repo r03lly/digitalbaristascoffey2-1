@@ -140,8 +140,26 @@ function AttendanceAdmin() {
         </form>
         <ul className="mt-3 divide-y divide-border">
           {names.map((n) => <li key={n.id} className="flex items-center justify-between gap-3 py-3 text-sm">
-            <span className="min-w-0 break-words text-foreground">{n.name}<span className="ml-2 text-xs text-muted-foreground">{t(n.active ? "Aktif" : "Nonaktif")}</span></span>
-            <Button variant="outline" size="sm" disabled={saving} onClick={() => void toggleName(n.id, n.active)} aria-label={`${t(n.active ? "Nonaktifkan" : "Aktifkan")} ${n.name}`}><Power />{t(n.active ? "Nonaktifkan" : "Aktifkan")}</Button>
+            {editId === n.id ? (
+              <>
+                <label htmlFor={`edit-barista-${n.id}`} className="sr-only">{t("Nama barista")}</label>
+                <input id={`edit-barista-${n.id}`} value={editValue} onChange={(e) => setEditValue(e.target.value)} maxLength={100}
+                  className="min-w-0 flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-sm text-foreground" />
+                <span className="flex shrink-0 gap-1">
+                  <Button variant="outline" size="sm" disabled={saving || !editValue.trim()} onClick={() => void saveName()} aria-label={t("Simpan")}><Check /></Button>
+                  <Button variant="ghost" size="sm" disabled={saving} onClick={() => setEditId(null)} aria-label={t("Batal")}><X /></Button>
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="min-w-0 break-words text-foreground">{n.name}<span className="ml-2 text-xs text-muted-foreground">{t(n.active ? "Aktif" : "Nonaktif")}</span></span>
+                <span className="flex shrink-0 gap-1">
+                  <Button variant="outline" size="sm" disabled={saving} onClick={() => startEdit(n.id, n.name)} aria-label={`${t("Ubah nama")} ${n.name}`}><Pencil /></Button>
+                  <Button variant="outline" size="sm" disabled={saving} onClick={() => void toggleName(n.id, n.active)} aria-label={`${t(n.active ? "Nonaktifkan" : "Aktifkan")} ${n.name}`}><Power /></Button>
+                  <Button variant="outline" size="sm" className="text-destructive" disabled={saving} onClick={() => void deleteName(n.id, n.name)} aria-label={`${t("Hapus nama")} ${n.name}`}><Trash2 /></Button>
+                </span>
+              </>
+            )}
           </li>)}
           {!names.length && <li className="py-3 text-sm text-muted-foreground">{t("Belum ada nama barista aktif.")}</li>}
         </ul>
