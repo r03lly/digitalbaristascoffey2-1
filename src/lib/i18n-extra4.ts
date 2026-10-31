@@ -86,6 +86,17 @@ export const EN_EXTRA4: Record<string, string> = {
   "Belum ada bahan. Tambahkan di atas.": "No ingredients yet. Add one above.",
 
   // Attendance
+  "Daftar nama barista": "Barista names",
+  "Nama barista": "Barista name",
+  "Pilih nama barista": "Select barista name",
+  "Tambah nama": "Add name",
+  "Nama barista sudah ada.": "This barista name already exists.",
+  "Nama ini sudah absen hari ini.": "This name has already checked in today.",
+  "Belum ada nama barista aktif.": "No active barista names yet.",
+  Aktif: "Active",
+  Nonaktif: "Inactive",
+  Aktifkan: "Activate",
+  Nonaktifkan: "Deactivate",
   "Laporan Presensi Barista — Scoffey": "Barista Attendance Report — Scoffey",
   "Total kehadiran": "Total attendance",
   "Barista hadir": "Baristas present",

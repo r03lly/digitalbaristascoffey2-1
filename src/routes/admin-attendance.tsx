@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Printer } from "lucide-react";
+import { Printer, Plus, Power } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { PhoneShell, SectionLabel } from "@/components/PhoneShell";
 import { PeriodFilter } from "@/components/PeriodFilter";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,13 +39,37 @@ function AttendanceAdmin() {
   const [value, setValue] = useState(() => localDateKey(new Date()).slice(0, 7));
   const [rows, setRows] = useState<Row[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [names, setNames] = useState<{ id: string; name: string; active: boolean }[]>([]);
+  const [newName, setNewName] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
-    const { data, error: err } = await supabase.from("attendance").select("*").order("check_in", { ascending: false });
-    if (err) setError(err.message);
-    else setRows(data ?? []);
+    const [attendance, staff] = await Promise.all([
+      supabase.from("attendance").select("*").order("check_in", { ascending: false }),
+      supabase.from("barista_names").select("id,name,active").order("name"),
+    ]);
+    if (attendance.error || staff.error) setError(attendance.error?.message ?? staff.error?.message ?? null);
+    else { setRows(attendance.data ?? []); setNames(staff.data ?? []); setError(null); }
   }, []);
   useEffect(() => { if (isAdmin) void load(); }, [isAdmin, load]);
+
+  async function addName(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newName.trim() || saving) return;
+    setSaving(true);
+    const { error: err } = await supabase.from("barista_names").insert({ name: newName.trim() });
+    if (err) setError(err.code === "23505" ? t("Nama barista sudah ada.") : err.message);
+    else { setNewName(""); await load(); }
+    setSaving(false);
+  }
+
+  async function toggleName(id: string, active: boolean) {
+    setSaving(true);
+    const { error: err } = await supabase.from("barista_names").update({ active: !active }).eq("id", id);
+    if (err) setError(err.message);
+    else await load();
+    setSaving(false);
+  }
 
   const list = useMemo(() => rows.filter((r) => inPeriod(r.work_date, mode, value)), [rows, mode, value]);
   const perStaff = useMemo(() => {
@@ -77,6 +102,22 @@ function AttendanceAdmin() {
 
   return (
     <PhoneShell title={t("PRESENSI BARISTA")} back="/admin" nav>
+      <section className="mt-4">
+        <SectionLabel>{t("Daftar nama barista")}</SectionLabel>
+        <form onSubmit={(e) => void addName(e)} className="mt-3 flex flex-wrap gap-2">
+          <label htmlFor="new-barista-name" className="sr-only">{t("Nama barista")}</label>
+          <input id="new-barista-name" value={newName} onChange={(e) => setNewName(e.target.value)} required maxLength={100}
+            placeholder={t("Nama barista")} className="min-w-0 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground" />
+          <Button type="submit" disabled={saving || !newName.trim()}><Plus />{t("Tambah nama")}</Button>
+        </form>
+        <ul className="mt-3 divide-y divide-border">
+          {names.map((n) => <li key={n.id} className="flex items-center justify-between gap-3 py-3 text-sm">
+            <span className="min-w-0 break-words text-foreground">{n.name}<span className="ml-2 text-xs text-muted-foreground">{t(n.active ? "Aktif" : "Nonaktif")}</span></span>
+            <Button variant="outline" size="sm" disabled={saving} onClick={() => void toggleName(n.id, n.active)} aria-label={`${t(n.active ? "Nonaktifkan" : "Aktifkan")} ${n.name}`}><Power />{t(n.active ? "Nonaktifkan" : "Aktifkan")}</Button>
+          </li>)}
+          {!names.length && <li className="py-3 text-sm text-muted-foreground">{t("Belum ada nama barista aktif.")}</li>}
+        </ul>
+      </section>
       <div className="mt-3"><PeriodFilter mode={mode} value={value} onChange={(m, v) => { setMode(m); setValue(v); }} /></div>
       <p className="mt-2 text-xs text-muted-foreground">{periodLabel(mode, value)}</p>
       <section className="mt-3 grid grid-cols-2 gap-2">

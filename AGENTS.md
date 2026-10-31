@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Keep admin-managed attendance identities in `public.barista_names`, separate from login accounts; attendance stores the identity ID plus a name snapshot to support shared barista accounts without changing historical names.
+- Attendance captures device-local dates and device timestamps on click; use the pure helpers in `src/lib/attendance.ts` and preserve overnight checkout.

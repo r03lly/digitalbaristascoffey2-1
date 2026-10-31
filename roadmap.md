@@ -65,6 +65,7 @@ Sumber tunggal: PDF "Rangkuman UI/UX Digital Barista Scoffey 1–14" (DESIGN FLO
 
 ## Halaman Barista
 - [x] Rapikan tata letak halaman barista agar serapi halaman admin
+- [x] Admin mengelola nama barista; presensi memilih nama dan memakai waktu perangkat
 
 ## Developer & backup
 - [x] Halaman /develop
