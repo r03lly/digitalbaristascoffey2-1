@@ -147,7 +147,7 @@ function AttendanceAdmin() {
                   className="min-w-0 flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-sm text-foreground" />
                 <span className="flex shrink-0 gap-1">
                   <Button variant="outline" size="sm" disabled={saving || !editValue.trim()} onClick={() => void saveName()} aria-label={t("Simpan")}><Check /></Button>
-                  <Button variant="ghost" size="sm" disabled={saving} onClick={() => setEditId(null)} aria-label={t("Batal")}><X /></Button>
+                  <Button variant="ghost" size="sm" disabled={saving} onClick={() => setEditId(null)} aria-label={t("Batalkan")}><X /></Button>
                 </span>
               </>
             ) : (
