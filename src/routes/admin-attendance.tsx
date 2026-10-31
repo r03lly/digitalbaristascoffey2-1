@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Printer, Plus, Power } from "lucide-react";
+import { Printer, Plus, Power, Pencil, Trash2, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PhoneShell, SectionLabel } from "@/components/PhoneShell";
 import { PeriodFilter } from "@/components/PeriodFilter";
@@ -42,6 +42,8 @@ function AttendanceAdmin() {
   const [names, setNames] = useState<{ id: string; name: string; active: boolean }[]>([]);
   const [newName, setNewName] = useState("");
   const [saving, setSaving] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
 
   const load = useCallback(async () => {
     const [attendance, staff] = await Promise.all([
@@ -68,6 +70,32 @@ function AttendanceAdmin() {
     const { error: err } = await supabase.from("barista_names").update({ active: !active }).eq("id", id);
     if (err) setError(err.message);
     else await load();
+    setSaving(false);
+  }
+
+  function startEdit(id: string, name: string) {
+    setEditId(id);
+    setEditValue(name);
+  }
+
+  async function saveName() {
+    if (!editId || !editValue.trim() || saving) return;
+    setSaving(true);
+    const { error: err } = await supabase.from("barista_names").update({ name: editValue.trim() }).eq("id", editId);
+    if (err) setError(err.code === "23505" ? t("Nama barista sudah ada.") : err.message);
+    else { setEditId(null); await load(); }
+    setSaving(false);
+  }
+
+  async function deleteName(id: string, name: string) {
+    if (!window.confirm(t("Hapus nama ini? Riwayat presensi tetap tersimpan."))) return;
+    setSaving(true);
+    // Riwayat presensi menyimpan snapshot nama, jadi cukup lepas referensi ID-nya lalu hapus.
+    const { error: errRel } = await supabase.from("attendance").update({ barista_name_id: null }).eq("barista_name_id", id);
+    if (errRel) { setError(errRel.message); setSaving(false); return; }
+    const { error: err } = await supabase.from("barista_names").delete().eq("id", id);
+    if (err) setError(err.message);
+    else { if (editId === id) setEditId(null); await load(); }
     setSaving(false);
   }
 
@@ -112,8 +140,26 @@ function AttendanceAdmin() {
         </form>
         <ul className="mt-3 divide-y divide-border">
           {names.map((n) => <li key={n.id} className="flex items-center justify-between gap-3 py-3 text-sm">
-            <span className="min-w-0 break-words text-foreground">{n.name}<span className="ml-2 text-xs text-muted-foreground">{t(n.active ? "Aktif" : "Nonaktif")}</span></span>
-            <Button variant="outline" size="sm" disabled={saving} onClick={() => void toggleName(n.id, n.active)} aria-label={`${t(n.active ? "Nonaktifkan" : "Aktifkan")} ${n.name}`}><Power />{t(n.active ? "Nonaktifkan" : "Aktifkan")}</Button>
+            {editId === n.id ? (
+              <>
+                <label htmlFor={`edit-barista-${n.id}`} className="sr-only">{t("Nama barista")}</label>
+                <input id={`edit-barista-${n.id}`} value={editValue} onChange={(e) => setEditValue(e.target.value)} maxLength={100}
+                  className="min-w-0 flex-1 rounded-md border border-input bg-background px-2 py-1.5 text-sm text-foreground" />
+                <span className="flex shrink-0 gap-1">
+                  <Button variant="outline" size="sm" disabled={saving || !editValue.trim()} onClick={() => void saveName()} aria-label={t("Simpan")}><Check /></Button>
+                  <Button variant="ghost" size="sm" disabled={saving} onClick={() => setEditId(null)} aria-label={t("Batal")}><X /></Button>
+                </span>
+              </>
+            ) : (
+              <>
+                <span className="min-w-0 break-words text-foreground">{n.name}<span className="ml-2 text-xs text-muted-foreground">{t(n.active ? "Aktif" : "Nonaktif")}</span></span>
+                <span className="flex shrink-0 gap-1">
+                  <Button variant="outline" size="sm" disabled={saving} onClick={() => startEdit(n.id, n.name)} aria-label={`${t("Ubah nama")} ${n.name}`}><Pencil /></Button>
+                  <Button variant="outline" size="sm" disabled={saving} onClick={() => void toggleName(n.id, n.active)} aria-label={`${t(n.active ? "Nonaktifkan" : "Aktifkan")} ${n.name}`}><Power /></Button>
+                  <Button variant="outline" size="sm" className="text-destructive" disabled={saving} onClick={() => void deleteName(n.id, n.name)} aria-label={`${t("Hapus nama")} ${n.name}`}><Trash2 /></Button>
+                </span>
+              </>
+            )}
           </li>)}
           {!names.length && <li className="py-3 text-sm text-muted-foreground">{t("Belum ada nama barista aktif.")}</li>}
         </ul>
