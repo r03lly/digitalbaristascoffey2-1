@@ -42,6 +42,8 @@ function AttendanceAdmin() {
   const [names, setNames] = useState<{ id: string; name: string; active: boolean }[]>([]);
   const [newName, setNewName] = useState("");
   const [saving, setSaving] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
 
   const load = useCallback(async () => {
     const [attendance, staff] = await Promise.all([
@@ -68,6 +70,32 @@ function AttendanceAdmin() {
     const { error: err } = await supabase.from("barista_names").update({ active: !active }).eq("id", id);
     if (err) setError(err.message);
     else await load();
+    setSaving(false);
+  }
+
+  function startEdit(id: string, name: string) {
+    setEditId(id);
+    setEditValue(name);
+  }
+
+  async function saveName() {
+    if (!editId || !editValue.trim() || saving) return;
+    setSaving(true);
+    const { error: err } = await supabase.from("barista_names").update({ name: editValue.trim() }).eq("id", editId);
+    if (err) setError(err.code === "23505" ? t("Nama barista sudah ada.") : err.message);
+    else { setEditId(null); await load(); }
+    setSaving(false);
+  }
+
+  async function deleteName(id: string, name: string) {
+    if (!window.confirm(t("Hapus nama ini? Riwayat presensi tetap tersimpan."))) return;
+    setSaving(true);
+    // Riwayat presensi menyimpan snapshot nama, jadi cukup lepas referensi ID-nya lalu hapus.
+    const { error: errRel } = await supabase.from("attendance").update({ barista_name_id: null }).eq("barista_name_id", id);
+    if (errRel) { setError(errRel.message); setSaving(false); return; }
+    const { error: err } = await supabase.from("barista_names").delete().eq("id", id);
+    if (err) setError(err.message);
+    else { if (editId === id) setEditId(null); await load(); }
     setSaving(false);
   }
 
