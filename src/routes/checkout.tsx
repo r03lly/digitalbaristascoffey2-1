@@ -175,6 +175,19 @@ function CheckoutPage() {
             </div>
           )}
 
+          {placedCash && placedCash.paid > 0 && (
+            <div className="mt-5 w-full rounded-2xl border border-primary/40 bg-card/60 p-4 text-sm">
+              <p className="flex justify-between gap-3">
+                <span className="text-muted-foreground">{t("Uang dibayar")}</span>
+                <span className="font-semibold text-foreground">{formatIDR(placedCash.paid)}</span>
+              </p>
+              <p className="mt-1 flex justify-between gap-3">
+                <span className="text-muted-foreground">{t("Kembalian")}</span>
+                <span className="font-bold text-primary">{formatIDR(Math.max(placedCash.change, 0))}</span>
+              </p>
+            </div>
+          )}
+
           <p className="mt-5 max-w-sm text-sm text-muted-foreground">
             {cash
               ? t("Bayar ke barista di kasir, lalu tekan tombol di bawah untuk melihat struk.")
