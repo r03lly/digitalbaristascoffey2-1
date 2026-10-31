@@ -77,6 +77,8 @@ function CheckoutPage() {
   const [placed, setPlaced] = useState<Order | null>(null);
   const [paid, setPaid] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [cashPaid, setCashPaid] = useState("");
+  const [placedCash, setPlacedCash] = useState<{ paid: number; change: number } | null>(null);
   const navigate = useNavigate();
 
   // Pesanan menu reguler kini memakai keranjang: bisa banyak item + jumlah.
@@ -114,6 +116,9 @@ function CheckoutPage() {
   const service = 0;
   const total = subtotal + tip;
 
+
+  const cashPaidNum = Number(cashPaid.replace(/[^\d]/g, "")) || 0;
+  const cashChange = cashPaidNum - total;
 
   const activeWallet = EWALLETS.find((w) => w.id === payment);
   const paymentLabel = activeWallet
