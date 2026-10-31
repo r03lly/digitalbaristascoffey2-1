@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { Printer, Plus, Power } from "lucide-react";
+import { Printer, Plus, Power, Pencil, Trash2, X, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PhoneShell, SectionLabel } from "@/components/PhoneShell";
 import { PeriodFilter } from "@/components/PeriodFilter";
