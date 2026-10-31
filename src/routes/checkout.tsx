@@ -77,6 +77,8 @@ function CheckoutPage() {
   const [placed, setPlaced] = useState<Order | null>(null);
   const [paid, setPaid] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [cashPaid, setCashPaid] = useState("");
+  const [placedCash, setPlacedCash] = useState<{ paid: number; change: number } | null>(null);
   const navigate = useNavigate();
 
   // Pesanan menu reguler kini memakai keranjang: bisa banyak item + jumlah.
@@ -114,6 +116,9 @@ function CheckoutPage() {
   const service = 0;
   const total = subtotal + tip;
 
+
+  const cashPaidNum = Number(cashPaid.replace(/[^\d]/g, "")) || 0;
+  const cashChange = cashPaidNum - total;
 
   const activeWallet = EWALLETS.find((w) => w.id === payment);
   const paymentLabel = activeWallet
@@ -166,6 +171,19 @@ function CheckoutPage() {
               <p className="font-semibold text-foreground">{BANK.number}</p>
               <p className="text-xs text-muted-foreground">
                 {t("Atas nama")}: {BANK.name}
+              </p>
+            </div>
+          )}
+
+          {placedCash && placedCash.paid > 0 && (
+            <div className="mt-5 w-full rounded-2xl border border-primary/40 bg-card/60 p-4 text-sm">
+              <p className="flex justify-between gap-3">
+                <span className="text-muted-foreground">{t("Uang dibayar")}</span>
+                <span className="font-semibold text-foreground">{formatIDR(placedCash.paid)}</span>
+              </p>
+              <p className="mt-1 flex justify-between gap-3">
+                <span className="text-muted-foreground">{t("Kembalian")}</span>
+                <span className="font-bold text-primary">{formatIDR(Math.max(placedCash.change, 0))}</span>
               </p>
             </div>
           )}
@@ -505,6 +523,44 @@ function CheckoutPage() {
                       </p>
                     </div>
                   )}
+
+                  {p.id === "Tunai di Kasir" && payment === "Tunai di Kasir" && (
+                    <div className="mt-2 rounded-2xl border border-primary/40 bg-card/60 p-4 text-sm">
+                      <label className="label-caps text-primary">{t("Uang dibayar")}</label>
+                      <input
+                        value={cashPaid}
+                        onChange={(e) => setCashPaid(e.target.value.replace(/[^\d]/g, "").slice(0, 10))}
+                        inputMode="numeric"
+                        placeholder={t("Contoh: 50000")}
+                        className="mt-2 w-full rounded-2xl border border-input bg-background/40 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
+                      />
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {Array.from(
+                          new Set([total, ...[20000, 50000, 100000, 200000].filter((v) => v >= total)]),
+                        ).map((v) => (
+                          <button
+                            key={v}
+                            type="button"
+                            onClick={() => setCashPaid(String(v))}
+                            className="rounded-xl border border-primary/50 px-3 py-1.5 text-xs font-semibold text-primary"
+                          >
+                            {v === total ? t("Pas") : formatIDR(v)}
+                          </button>
+                        ))}
+                      </div>
+                      {cashPaidNum > 0 && (
+                        <p
+                          className={`mt-3 text-center text-sm font-semibold ${
+                            cashChange >= 0 ? "text-primary" : "text-destructive"
+                          }`}
+                        >
+                          {cashChange >= 0
+                            ? `${t("Kembalian")}: ${formatIDR(cashChange)}`
+                            : `${t("Kurang")}: ${formatIDR(Math.abs(cashChange))}`}
+                        </p>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -610,6 +666,11 @@ function CheckoutPage() {
                   kind: hasCart ? "regular" : "signature",
                   lines,
                 });
+                setPlacedCash(
+                  payment === "Tunai di Kasir" && cashPaidNum > 0
+                    ? { paid: cashPaidNum, change: cashChange }
+                    : null,
+                );
                 setPlaced(order);
                 clearCart();
                 navigate({ to: "/checkout" });
