@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useBlocker, useNavigate } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, Download, MessageCircle, Minus, Plus, Trash2 } from "lucide-react";
 import { GoldButton, InfoCard, PhoneShell, ProgressDots } from "@/components/PhoneShell";
 import {

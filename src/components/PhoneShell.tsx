@@ -219,7 +219,7 @@ export function PhoneShell({
                 )}
                 {step && <p className="label-caps mt-1 text-primary">{step}</p>}
               </div>
-              {back && <span className="size-8 shrink-0 md:hidden" aria-hidden />}
+              {(back || backLocked) && <span className="size-8 shrink-0 md:hidden" aria-hidden />}
             </header>
           )}
           <FitScale
