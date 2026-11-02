@@ -6,6 +6,7 @@ import {
   Check,
   Coffee,
   Home,
+  Lock,
   PlusCircle,
   Sparkles,
   User,
@@ -161,6 +162,7 @@ export function PhoneShell({
   title,
   step,
   back,
+  backLocked,
   nav = false,
   navItems,
   header,
@@ -170,6 +172,8 @@ export function PhoneShell({
   title?: string;
   step?: string;
   back?: string;
+  /** Tampilkan ikon gembok menggantikan tombol kembali (pesanan belum selesai). */
+  backLocked?: boolean;
   nav?: boolean;
   /** Custom nav items; when provided with `nav`, overrides the default bottom nav. */
   navItems?: NavItem[] | undefined;
@@ -187,7 +191,7 @@ export function PhoneShell({
             <BrandBar />
           </div>
           {header && <div className="shrink-0 md:order-3 md:mt-2">{header}</div>}
-          {!header && (title || back) && (
+          {!header && (title || back || backLocked) && (
             <header className="phone-shell-header relative flex shrink-0 items-center gap-3 border-b border-border/60 px-6 pt-1 pb-3 md:order-3 md:mt-2 md:px-10 md:pb-5">
               {back && (
                 <Link
@@ -197,6 +201,15 @@ export function PhoneShell({
                 >
                   <ArrowLeft className="size-4" />
                 </Link>
+              )}
+              {!back && backLocked && (
+                <span
+                  title={t("Pesanan terkunci")}
+                  aria-label={t("Pesanan terkunci")}
+                  className="flex size-8 shrink-0 cursor-not-allowed items-center justify-center rounded-full border border-border/60 text-muted-foreground/60"
+                >
+                  <Lock className="size-4" />
+                </span>
               )}
               <div className="min-w-0 flex-1 text-center md:text-left">
                 {title && (
