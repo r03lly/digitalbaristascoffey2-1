@@ -1,5 +1,7 @@
 /** Fourth batch: Indonesian source copy -> English (finance, stock, attendance pages). */
 export const EN_EXTRA4: Record<string, string> = {
+  // Checkout lock (page 10)
+  "Pesanan terkunci": "Order locked",
   // Admin trend chart
   "Tren penjualan & keuntungan": "Sales & profit trend",
   "14 hari": "14 days",

@@ -304,7 +304,7 @@ function CheckoutPage() {
   }
 
   return (
-    <PhoneShell step={t("Halaman 10")} title={t("ORDER SUMMARY")} back="/create/recipe">
+    <PhoneShell step={t("Halaman 10")} title={t("ORDER SUMMARY")} backLocked>
       <ProgressDots current={7} />
       <p className="mt-3 text-sm text-muted-foreground">
         {t(
