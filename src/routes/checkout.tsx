@@ -90,14 +90,12 @@ function CheckoutPage() {
   useBlocker({ shouldBlockFn: () => unpaidRef.current });
 
   useEffect(() => {
-    if (placed || !paid) {
-      const id = sessionStorage.getItem(UNPAID_KEY);
-      if (id && !placed) {
-        const found = orders.find((o) => o.id === id);
-        if (found) setPlaced(found);
-      }
-    }
-  }, [orders, placed, paid]);
+    if (placed) return;
+    const id = sessionStorage.getItem(UNPAID_KEY);
+    if (!id) return;
+    const found = orders.find((o) => o.id === id);
+    if (found) setPlaced(found);
+  }, [orders, placed]);
 
   // Pesanan menu reguler kini memakai keranjang: bisa banyak item + jumlah.
   const hasCart = cart.length > 0;
