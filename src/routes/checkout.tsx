@@ -218,6 +218,7 @@ function CheckoutPage() {
                 setTimeout(() => {
                   setVerifying(false);
                   setPaid(true);
+                  sessionStorage.removeItem(UNPAID_KEY);
                 }, 1600);
               }}
             >
@@ -688,6 +689,7 @@ function CheckoutPage() {
                     : null,
                 );
                 setPlaced(order);
+                sessionStorage.setItem(UNPAID_KEY, order.id);
                 clearCart();
                 navigate({ to: "/checkout" });
 
