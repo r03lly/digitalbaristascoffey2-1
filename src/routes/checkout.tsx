@@ -1,5 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useBlocker, useNavigate } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, Download, MessageCircle, Minus, Plus, Trash2 } from "lucide-react";
 import { GoldButton, InfoCard, PhoneShell, ProgressDots } from "@/components/PhoneShell";
 import {
@@ -63,6 +63,7 @@ function CheckoutPage() {
     menuItem,
     userId,
     cart,
+    orders,
     setCartQty,
     clearCart,
   } = useBarista();
@@ -80,6 +81,21 @@ function CheckoutPage() {
   const [cashPaid, setCashPaid] = useState("");
   const [placedCash, setPlacedCash] = useState<{ paid: number; change: number } | null>(null);
   const navigate = useNavigate();
+
+  // Halaman 10 dikunci: pesanan yang sudah dibuat tapi belum dibayar tidak boleh
+  // keluar dari halaman ini, dan id-nya disimpan agar kunci tetap hidup setelah refresh.
+  const UNPAID_KEY = "scoffey-unpaid-order";
+  const unpaidRef = useRef(false);
+  unpaidRef.current = Boolean(placed && !paid);
+  useBlocker({ shouldBlockFn: () => unpaidRef.current });
+
+  useEffect(() => {
+    if (placed) return;
+    const id = sessionStorage.getItem(UNPAID_KEY);
+    if (!id) return;
+    const found = orders.find((o) => o.id === id);
+    if (found) setPlaced(found);
+  }, [orders, placed]);
 
   // Pesanan menu reguler kini memakai keranjang: bisa banyak item + jumlah.
   const hasCart = cart.length > 0;
@@ -202,6 +218,7 @@ function CheckoutPage() {
                 setTimeout(() => {
                   setVerifying(false);
                   setPaid(true);
+                  sessionStorage.removeItem(UNPAID_KEY);
                 }, 1600);
               }}
             >
@@ -287,7 +304,7 @@ function CheckoutPage() {
   }
 
   return (
-    <PhoneShell step={t("Halaman 10")} title={t("ORDER SUMMARY")} back="/create/recipe">
+    <PhoneShell step={t("Halaman 10")} title={t("ORDER SUMMARY")} backLocked>
       <ProgressDots current={7} />
       <p className="mt-3 text-sm text-muted-foreground">
         {t(
@@ -672,6 +689,7 @@ function CheckoutPage() {
                     : null,
                 );
                 setPlaced(order);
+                sessionStorage.setItem(UNPAID_KEY, order.id);
                 clearCart();
                 navigate({ to: "/checkout" });
 
