@@ -63,6 +63,7 @@ function CheckoutPage() {
     menuItem,
     userId,
     cart,
+    orders,
     setCartQty,
     clearCart,
   } = useBarista();
@@ -80,6 +81,23 @@ function CheckoutPage() {
   const [cashPaid, setCashPaid] = useState("");
   const [placedCash, setPlacedCash] = useState<{ paid: number; change: number } | null>(null);
   const navigate = useNavigate();
+
+  // Halaman 10 dikunci: pesanan yang sudah dibuat tapi belum dibayar tidak boleh
+  // keluar dari halaman ini, dan id-nya disimpan agar kunci tetap hidup setelah refresh.
+  const UNPAID_KEY = "scoffey-unpaid-order";
+  const unpaidRef = useRef(false);
+  unpaidRef.current = Boolean(placed && !paid);
+  useBlocker({ shouldBlockFn: () => unpaidRef.current });
+
+  useEffect(() => {
+    if (placed || !paid) {
+      const id = sessionStorage.getItem(UNPAID_KEY);
+      if (id && !placed) {
+        const found = orders.find((o) => o.id === id);
+        if (found) setPlaced(found);
+      }
+    }
+  }, [orders, placed, paid]);
 
   // Pesanan menu reguler kini memakai keranjang: bisa banyak item + jumlah.
   const hasCart = cart.length > 0;
