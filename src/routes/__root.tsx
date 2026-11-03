@@ -3,6 +3,7 @@ import {
   Outlet,
   Link,
   createRootRouteWithContext,
+  redirect,
   useRouter,
   HeadContent,
   Scripts,
@@ -15,6 +16,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { BaristaProvider } from "../lib/barista-store";
 import { LanguageProvider } from "../lib/i18n";
 import { StaffRouteGuard } from "../components/StaffRouteGuard";
+import { readUnpaidId } from "../lib/unpaid-order";
 
 function NotFoundComponent() {
   return (
@@ -107,6 +109,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "icon", href: "/favicon.png", type: "image/png" },
     ],
   }),
+
+  // Penjaga kunci Halaman 10: selama ada pesanan yang belum dibayar, semua rute
+  // selain /checkout dialihkan kembali ke halaman pembayaran (menahan URL langsung,
+  // tombol back browser, dan tautan apa pun). Hanya berlaku di browser.
+  beforeLoad: () => {
+    if (typeof window === "undefined") return;
+    if (window.location.pathname !== "/checkout" && readUnpaidId()) {
+      throw redirect({ to: "/checkout" });
+    }
+  },
 
   shellComponent: RootShell,
   component: RootComponent,

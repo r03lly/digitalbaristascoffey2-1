@@ -14,6 +14,7 @@ import { heroDrink } from "@/lib/barista-images";
 import { QrisCode } from "@/components/QrisCode";
 import { useBarista, type Order, type OrderLine } from "@/lib/barista-store";
 import { downloadReceipt, sendReceiptViaWhatsApp } from "@/lib/receipt";
+import { clearUnpaidId, readUnpaidId, saveUnpaidId } from "@/lib/unpaid-order";
 import { t } from "@/lib/i18n";
 
 export const Route = createFileRoute("/checkout")({
@@ -83,19 +84,36 @@ function CheckoutPage() {
   const navigate = useNavigate();
 
   // Halaman 10 dikunci: pesanan yang sudah dibuat tapi belum dibayar tidak boleh
-  // keluar dari halaman ini, dan id-nya disimpan agar kunci tetap hidup setelah refresh.
-  const UNPAID_KEY = "scoffey-unpaid-order";
+  // keluar dari halaman ini. useBlocker menahan navigasi link internal; listener
+  // popstate menahan tombol back browser; penjaga di root route menahan URL langsung.
   const unpaidRef = useRef(false);
   unpaidRef.current = Boolean(placed && !paid);
   useBlocker({ shouldBlockFn: () => unpaidRef.current });
 
   useEffect(() => {
     if (placed) return;
-    const id = sessionStorage.getItem(UNPAID_KEY);
+    const id = readUnpaidId();
     if (!id) return;
     const found = orders.find((o) => o.id === id);
-    if (found) setPlaced(found);
+    if (found) {
+      setPlaced(found);
+    } else if (orders.length > 0) {
+      // Pesanan tidak ada lagi di daftar (mis. sudah dihapus barista): buka kuncinya.
+      clearUnpaidId();
+    }
   }, [orders, placed]);
+
+  // Pengaman tombol back browser: kalau URL berubah saat masih belum dibayar,
+  // paksa kembali ke halaman pembayaran.
+  useEffect(() => {
+    const onPop = () => {
+      if (unpaidRef.current && window.location.pathname !== "/checkout") {
+        void navigate({ to: "/checkout", replace: true });
+      }
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, [navigate]);
 
   // Pesanan menu reguler kini memakai keranjang: bisa banyak item + jumlah.
   const hasCart = cart.length > 0;
@@ -218,7 +236,7 @@ function CheckoutPage() {
                 setTimeout(() => {
                   setVerifying(false);
                   setPaid(true);
-                  sessionStorage.removeItem(UNPAID_KEY);
+                  clearUnpaidId();
                 }, 1600);
               }}
             >
@@ -689,7 +707,7 @@ function CheckoutPage() {
                     : null,
                 );
                 setPlaced(order);
-                sessionStorage.setItem(UNPAID_KEY, order.id);
+                saveUnpaidId(order.id);
                 clearCart();
                 navigate({ to: "/checkout" });
 
